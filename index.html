@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8" id="source_1">
+                <h1>NYC Public Recycling Bins</h1><br>
+                Press to refresh both charts<br><br>
+                <input type="button" class="btn btn-primary" id="btn_1" value="Refresh"><br><br>
+            </div>
+            <div id="source_2" style="border-color: black; border-style: solid; text-align: center;">
+                <h1><div id="title">API Charts</div></h1><br><br>
+                <b>Comparison of public recycling bin types across the 5 broughs of New York City.</b><br><br>
+                <div id="graph_1"></div><br><br>
+                <b>Percentage of public recycling bins between location types, within in New York City.</b><br><br>
+                <div id="graph_2"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+$('#source_1').show();
+$('#source_2').hide();
+
+function get_graphs(){
+$.getJSON('https://data.cityofnewyork.us/resource/sxx4-xhzg.json', function(result){
+    console.log(result);
+    let data = [];
+    let counts_paper = {
+        "BKN": 0,
+        "BKS": 0,
+        "BX": 0,
+        "MAN": 0,
+        "QE": 0,
+        "QW": 0,
+        "SI": 0
+      };
+    for(let i= 0; i < result.length; i++){
+        let item=[];
+        item[0]= result[i]["dsny_zone"];
+        item[1]= result[i]["paper_bins"];
+        item[2]= result[i]["mgp_bins"];
+        item[3]= result[i]["site_type"];
+
+        data[i]= item
+        counts_paper[item[0]]++
+        console.log()
+    }
+    let BK_paperbins= 0
+    let BK_mpgbins= 0
+    for(let i=0;i<data.length;i++){
+        if (data[i][0]=="BKN"||data[i][0]=="BKS"&& data[i][1] >= 0 && data[i][2] >= 0){
+            BK_paperbins=parseInt(data[i][1])+BK_paperbins
+            BK_mpgbins=parseInt(data[i][2])+BK_mpgbins
+        }
+    }
+    let BX_paperbins= 0
+    let BX_mpgbins= 0
+    for(let i=0;i<data.length;i++){
+        if (data[i][0]=="BX"&& data[i][1] >= 0 && data[i][2] >= 0){
+            BX_paperbins=parseInt(data[i][1])+BX_paperbins
+            BX_mpgbins=parseInt(data[i][2])+BX_mpgbins
+        }
+    }
+	let MAN_paperbins= 0
+    let MAN_mpgbins= 0
+    for(let i=0;i<data.length;i++){
+        if (data[i][0]=="MAN"&& data[i][1] >= 0 && data[i][2] >= 0){
+            MAN_paperbins=parseInt(data[i][1])+MAN_paperbins
+            MAN_mpgbins=parseInt(data[i][2])+MAN_mpgbins
+        }
+	}
+	let Q_paperbins= 0
+    let Q_mpgbins= 0
+    for(let i=0;i<data.length;i++){
+        if (data[i][0]=="QE"||data[i][0]=="QW"&& data[i][1] >= 0 && data[i][2] >= 0){
+            Q_paperbins=parseInt(data[i][1])+Q_paperbins
+            Q_mpgbins=parseInt(data[i][2])+Q_mpgbins
+        }
+	}
+	let SI_paperbins= 0
+    let SI_mpgbins= 0
+    for(let i=0;i<data.length;i++){
+        if (data[i][0]=="SI"&& data[i][1] >= 0 && data[i][2] >= 0){
+            SI_paperbins=parseInt(data[i][1])+SI_paperbins
+            SI_mpgbins=parseInt(data[i][2])+SI_mpgbins
+        }
+	}
+	//end of first graph parameters
+    let BID_paperbins= 0
+    let BID_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="BID"&& data[i][1] >= 0 && data[i][2] >= 0){
+            BID_paperbins=parseInt(data[i][1])+BID_paperbins
+            BID_mgpbins=parseInt(data[i][2])+BID_mgpbins
+        }
+    }
+    let CA_paperbins= 0
+    let CA_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="CITY AGENCY"&& data[i][1] >= 0 && data[i][2] >= 0){
+            CA_paperbins=parseInt(data[i][1])+CA_paperbins
+            CA_mgpbins=parseInt(data[i][2])+CA_mgpbins
+        }
+    }
+    let DI_paperbins= 0
+    let DI_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="DISTRICT"&& data[i][1] >= 0 && data[i][2] >= 0){
+            DI_paperbins=parseInt(data[i][1])+DI_paperbins
+            DI_mgpbins=parseInt(data[i][2])+DI_mgpbins
+        }
+    }
+    let NP_paperbins= 0
+    let NP_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="NON-PROFIT"&& data[i][1] >= 0 && data[i][2] >= 0){
+            NP_paperbins=parseInt(data[i][1])+NP_paperbins
+            NP_mgpbins=parseInt(data[i][2])+NP_mgpbins
+        }
+    }
+    let PK_paperbins= 0
+    let PK_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="PARK"&& data[i][1] >= 0 && data[i][2] >= 0){
+            PK_paperbins=parseInt(data[i][1])+PK_paperbins
+            PK_mgpbins=parseInt(data[i][2])+PK_mgpbins
+        }
+    }
+    let SCH_paperbins= 0
+    let SCH_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="SCHOOL"&& data[i][1] >= 0 && data[i][2] >= 0){
+            SCH_paperbins=parseInt(data[i][1])+SCH_paperbins
+            SCH_mgpbins=parseInt(data[i][2])+SCH_mgpbins
+        }
+    }
+    let SA_paperbins= 0
+    let SA_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="SPORTS ARENA"&& data[i][1] >= 0 && data[i][2] >= 0){
+            SA_paperbins=parseInt(data[i][1])+SA_paperbins
+            SA_mgpbins=parseInt(data[i][2])+SA_mgpbins
+        }
+    }
+    let ZOO_paperbins= 0
+    let ZOO_mgpbins= 0
+    for(let i=0; i<data.length; i++){
+        if(data[i][3]=="ZOO"&& data[i][1] >= 0 && data[i][2] >= 0){
+            ZOO_paperbins=parseInt(data[i][1])+ZOO_paperbins
+            ZOO_mgpbins=parseInt(data[i][2])+ZOO_mgpbins
+        }
+    }
+    console.log(counts_paper);
+
+	let amount=[];
+	amount[0]=BK_paperbins;
+	amount[1]=BK_mpgbins;
+	amount[2]=BX_paperbins;
+	amount[3]=BX_mpgbins;
+	amount[4]=MAN_paperbins;
+	amount[5]=MAN_mpgbins;
+	amount[6]=Q_paperbins;
+	amount[7]=Q_mpgbins;
+	amount[8]=SI_paperbins;
+	amount[9]=SI_mpgbins;
+	console.log(amount);
+
+    let sum_bins=BID_paperbins+BID_mgpbins+CA_paperbins+CA_mgpbins+DI_paperbins+DI_mgpbins+NP_paperbins+NP_mgpbins+PK_paperbins+PK_mgpbins+SCH_paperbins+SCH_mgpbins+SA_paperbins+SA_mgpbins+ZOO_paperbins+ZOO_mgpbins;
+    let amount2=[];
+    amount2[4]=BID_paperbins+BID_mgpbins;
+    amount2[5]=CA_paperbins+CA_mgpbins;
+    amount2[6]=DI_paperbins+DI_mgpbins;
+    amount2[2]=NP_paperbins+NP_mgpbins;
+    amount2[0]=PK_paperbins+PK_mgpbins;
+    amount2[3]=SCH_paperbins+SCH_mgpbins;
+    amount2[7]=SA_paperbins+SA_mgpbins;
+    amount2[1]=ZOO_paperbins+ZOO_mgpbins;
+    console.log(amount2);
+   //Total value and position[59 4, 26 5, 24 6, 100 2, 457 0, 82 3, 4 7, 234 1]
+    let percentages=[];
+    percentages[4]=(((BID_paperbins+BID_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[5]=(((CA_paperbins+CA_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[6]=(((DI_paperbins+DI_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[2]=(((NP_paperbins+NP_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[0]=(((PK_paperbins+PK_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[3]=(((SCH_paperbins+SCH_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[7]=(((SA_paperbins+SA_mgpbins)/sum_bins)*100).toFixed(2);
+    percentages[1]=(((ZOO_paperbins+ZOO_mgpbins)/sum_bins)*100).toFixed(2);
+console.log(percentages);
+
+    plotChart(amount);
+    plotChart2(percentages);
+});
+}
+function plotChart(amount){
+	let imageurl= "https://image-charts.com/chart?"
+    imageurl= imageurl + "cht=bvg&"
+	imageurl= imageurl + "chd=t:" + amount[0] + "," + amount[2] + "," + amount[4] +"," + amount[6] +"," + amount[8] + "|" + amount[1] + "," +amount[3] + "," + amount[5] +"," + amount[7] +"," + amount[9] +"&"
+    imageurl= imageurl + "chs=700x700&"
+    imageurl= imageurl + "chxl=1:|Broklyn|Bronx|Manhattan|Queens|Staten Island&"
+    imageurl= imageurl + "chxt=y,x&"
+    imageurl= imageurl + "chds=0,300&"
+    imageurl= imageurl + "chbh=a,5,15&"
+    imageurl= imageurl + "chdl=Paper bins|MGP(Metal,Glass,Plastic) bins&"
+    imageurl= imageurl + "chco=4c3dba,ff605e&"
+
+	
+	
+	console.log(imageurl);
+    $("#graph_1").html("<img src='" + imageurl + "'>");
+}
+
+function plotChart2(percentages){
+	let imageurl= "https://image-charts.com/chart?"
+    imageurl= imageurl +"cht=p&"
+    imageurl= imageurl +"chd=t:" + percentages[0] + "," + percentages[1] + "," + percentages[2] +"," + percentages[3] +"," + percentages[4] +"," + percentages[5] + "," + percentages[6]+ "," +percentages[7]+ "&"
+    imageurl= imageurl +"chs=800x400&"
+    imageurl= imageurl +"chl="+ percentages[0] + "%|" + percentages[1] + "%|" + percentages[2] + "%|" + percentages[3] + "%|" + percentages[4] + "%|" + percentages[5] + "%&"
+    imageurl= imageurl +"chp=0,1.5&"
+    imageurl= imageurl +"chxtc=0,-1000&"
+    imageurl= imageurl +"chlps=align,end|offset,90|textAlign,right&"
+    imageurl= imageurl +"chma=40,40,40,40&"
+    imageurl= imageurl +"chdl=Park|Zoo|Non-profit|School|BID (Business Improvement District)|City Agency|District ("+percentages[6]+"%)|Sports Arena ("+percentages[7]+"%)&"
+    imageurl= imageurl +"chco=4c3dba,ff605e"
+
+	console.log(imageurl);
+    $("#graph_2").html("<img src='" + imageurl + "'>");
+}
+
+$('#btn_1').click(function(){
+	$('#source_2').show();
+	get_graphs();
+})
+
+</script>
+</html>
